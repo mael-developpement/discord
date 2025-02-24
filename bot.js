@@ -47,12 +47,26 @@ client.on("ready", async () => {
 
   try {
     const channel = await client.channels.fetch(Channel_Role_Id);
+    const messages = await channel.messages.fetch({ limit: 100 });
+    const existingMessage = messages.find(
+      (msg) => msg.content === MessageContent
+    );
+
+    if (existingMessage) {
+      console.log(
+        "🔄 Le message des rôles existe déjà, pas besoin de le renvoyer."
+      );
+      return;
+    }
+
     await channel.send(welcomeMessage);
     const sentMessage = await channel.send(MessageContent);
 
     for (let emoji of Object.keys(roles)) {
       await sentMessage.react(emoji);
     }
+
+    console.log("✅ Message des rôles envoyé !");
   } catch (error) {
     console.error("Erreur lors de l'envoi du message des rôles:", error);
   }
